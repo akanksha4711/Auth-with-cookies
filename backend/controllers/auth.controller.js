@@ -102,5 +102,11 @@ const logout = (req, res) => {
 };
 
 // TODO: Add fetchMe controller
+const fetchMe = (req, res) => {
+  if (req.user) {
+    return res.status(200).json(req.user);
+  }
+  return res.status(500).json({ message: "No user for this request" });
+};
 
-module.exports = { login, refresh, signup, logout };
+module.exports = { login, refresh, signup, logout, fetchMe };

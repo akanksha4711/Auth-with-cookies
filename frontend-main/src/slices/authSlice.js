@@ -22,6 +22,7 @@ export const login = createAsyncThunk(
   },
 );
 
+// async action
 export const fetchMe = createAsyncThunk("auth/fetchMe", async (thunkAPI) => {
   try {
     const res = await api.get("/me");
@@ -53,7 +54,15 @@ const authSlice = createSlice({
         state.error = null;
         state.isLoggedIn = true;
       })
-      .addCase(login.rejected, failed);
+      .addCase(login.rejected, failed)
+      .addCase(fetchMe.pending, pending)
+      .addCase(fetchMe.fulfilled, (state, action) => {
+        state.user = action.payload;
+        state.status = "success";
+        state.error = null;
+        state.isLoggedIn = true;
+      })
+      .addCase(fetchMe.rejected, failed);
   },
 });
 

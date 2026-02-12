@@ -6,3 +6,20 @@ export const api = axios.create({
   timeout: 10000,
   withCredentials: true,
 });
+
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+    if (!originalRequest._retry && error.response?.status === 400) {
+      originalRequest._retry = true;
+      try {
+        await api.post("/refresh");
+        return api(originalRequest);
+      } catch (refreshErr) {
+        return Promise.reject(refreshErr);
+      }
+    }
+    return Promise.reject(error);
+  },
+);

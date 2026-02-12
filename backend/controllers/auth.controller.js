@@ -96,6 +96,7 @@ const logout = (req, res) => {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     // TODO: Add path to the cookie options
+    path: "/auth/refresh",
   });
   return res.status(200).json({ message: "OK" });
 };

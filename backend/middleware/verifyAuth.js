@@ -5,7 +5,7 @@ const verifyAuth = async (req, res, next) => {
   try {
     const at = req.cookies.accessToken;
     if (!at) {
-      return res.status(400).json({ message: "Missing access token" });
+      return res.status(401).json({ message: "Missing access token" });
     }
 
     const payload = jwt.verify(at, process.env.JWT_SECRET); //payload -> { sub: userInformation(non sensetive) }

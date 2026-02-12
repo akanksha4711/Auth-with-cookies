@@ -47,20 +47,24 @@ const login = async (req, res) => {
 
 const refresh = (req, res) => {
   // TODO: Wrap it in try catch block
-  const rt = req.cookies.refreshToken;
-  if (!rt) {
-    return res.status(400).json({ message: "Refresh token not present" });
+  try {
+    const rt = req.cookies.refreshToken;
+    if (!rt) {
+      return res.status(400).json({ message: "Refresh token not present" });
+    }
+    const payload = jwt.verify(rt, process.env.JWT_REFRESH_SECRET);
+    const accessToken = jwt.sign({ sub: payload.sub }, process.env.JWT_SECRET, {
+      expiresIn: "15m",
+    });
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true, // JS cannot access this particular cookie
+      secure: process.env.NODE_ENV === "production", // only send the cookie to "https" sites
+      maxAge: 15 * 60 * 1000,
+    });
+    return res.status(200).json({ message: "OK" });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
   }
-  const payload = jwt.verify(rt, process.env.JWT_REFRESH_SECRET);
-  const accessToken = jwt.sign({ sub: payload.sub }, process.env.JWT_SECRET, {
-    expiresIn: "15m",
-  });
-  res.cookie("accessToken", accessToken, {
-    httpOnly: true, // JS cannot access this particular cookie
-    secure: process.env.NODE_ENV === "production", // only send the cookie to "https" sites
-    maxAge: 15 * 60 * 1000,
-  });
-  return res.status(200).json({ message: "OK" });
 };
 
 const signup = async (req, res) => {
